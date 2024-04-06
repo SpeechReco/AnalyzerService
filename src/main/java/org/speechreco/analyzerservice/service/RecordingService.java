@@ -1,5 +1,6 @@
 package org.speechreco.analyzerservice.service;
 
+import com.google.cloud.storage.Bucket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.speechreco.analyzerservice.dao.RecordingRepository;
@@ -7,13 +8,14 @@ import org.speechreco.analyzerservice.model.Recording;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 import java.util.stream.Stream;
 
 @Service
 public class RecordingService {
     @Autowired
     private RecordingRepository recordingRepository;
+    @Autowired
+    private Bucket storageBucket;
 
     public boolean saveRecording(long uid, String data) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();

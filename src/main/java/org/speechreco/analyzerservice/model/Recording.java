@@ -1,8 +1,10 @@
 package org.speechreco.analyzerservice.model;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -22,4 +24,7 @@ public class Recording {
     private String title;
     private String recordingURI;
     private Timestamp creationDate;
+
+    @Transient
+    private String audioBytes;
 }

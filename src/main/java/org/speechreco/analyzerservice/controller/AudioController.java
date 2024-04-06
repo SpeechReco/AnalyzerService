@@ -17,12 +17,12 @@ public class AudioController {
     private RecordingService recordingService;
 
     @GetMapping("/{userId}")
-    public Stream<Recording> getAudiosForUser(@PathVariable long userId) {
+    public Stream<Recording> getAudiosForUser(@PathVariable("userId") long userId) {
         return recordingService.getRecordingsByUid(userId);
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<String> postAudiosForUser(@PathVariable int userId, @RequestBody String body) {
+    public ResponseEntity<String> postAudiosForUser(@PathVariable("userId") int userId, @RequestBody String body) {
         if (recordingService.saveRecording(userId, body)) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(200));
         }
@@ -43,6 +43,5 @@ public class AudioController {
     public String deleteSpecificAudio(@PathVariable int userId, @PathVariable int audioId) {
         return "Delete an audio " + audioId + " of user " + userId;
     }
-
 
 }
