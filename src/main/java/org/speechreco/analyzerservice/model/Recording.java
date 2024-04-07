@@ -1,6 +1,7 @@
 package org.speechreco.analyzerservice.model;
 
 
+import com.google.gson.Gson;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,5 +27,10 @@ public class Recording {
     private Timestamp creationDate;
 
     @Transient
-    private String audioBytes;
+    private byte[] audioBytes;
+
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
 }

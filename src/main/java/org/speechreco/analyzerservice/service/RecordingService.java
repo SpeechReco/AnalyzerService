@@ -8,6 +8,8 @@ import org.speechreco.analyzerservice.model.Recording;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Service
@@ -21,10 +23,15 @@ public class RecordingService {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
         Recording recording = gson.fromJson(data, Recording.class);
         if (uid != recording.getUserID()) return false;
+        storageBucket.create(String.valueOf(recording.getId()), recording.getAudioBytes());
+        System.out.println(Arrays.toString(recording.getAudioBytes()));
         try {
+            String url = String.valueOf(storageBucket.get(String.valueOf(recording.getId())).signUrl(10000000, TimeUnit.SECONDS));
+            recording.setRecordingURI(url);
             recordingRepository.save(recording);
             return true;
         } catch (Exception e) {
+            storageBucket.delete(Bucket.BucketSourceOption.userProject(String.valueOf(recording.getId())));
             return false;
         }
     }
@@ -34,11 +41,19 @@ public class RecordingService {
     }
 
     public Recording getSpecificRecording(int userId, long audioId) {
-        return recordingRepository.findById(audioId).orElse(null);
+        Recording retrievedRecording = recordingRepository.findById(audioId).orElse(null);
+        if (retrievedRecording != null && retrievedRecording.getUserID() == userId) {
+            return retrievedRecording;
+        }
+        return null;
     }
 
     public boolean deleteRecording(int userId, int audioId) {
-        recordingRepository.delete(getSpecificRecording(userId, audioId));
+        try {
+            recordingRepository.delete(getSpecificRecording(userId, audioId));
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 }

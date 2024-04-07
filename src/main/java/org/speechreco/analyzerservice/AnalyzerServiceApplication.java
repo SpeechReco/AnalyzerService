@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-//git token: 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
+//git token: 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
+//docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
 @SpringBootApplication()
 public class AnalyzerServiceApplication {
 

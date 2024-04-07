@@ -2,6 +2,7 @@ package org.speechreco.analyzerservice.controller;
 
 
 import org.speechreco.analyzerservice.model.Recording;
+import org.speechreco.analyzerservice.service.MessagingService;
 import org.speechreco.analyzerservice.service.RecordingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
@@ -15,6 +16,9 @@ import java.util.stream.Stream;
 public class AudioController {
     @Autowired
     private RecordingService recordingService;
+
+    @Autowired
+    private MessagingService messagingService;
 
     @GetMapping("/{userId}")
     public Stream<Recording> getAudiosForUser(@PathVariable("userId") long userId) {
@@ -35,13 +39,22 @@ public class AudioController {
     }
 
     @PostMapping("/{userId}/{audioId}")
-    public String postAudioForTranscription(@PathVariable int userId, @PathVariable int audioId) {
-        return "Post an audio" + audioId + " for user " + userId + " to transcription";
+    public ResponseEntity<String> postAudioForTranscription(@PathVariable("userId") int userId, @PathVariable("audioId") int audioId) {
+        Recording recordingToText = recordingService.getSpecificRecording(userId, audioId);
+        if (recordingToText != null && recordingToText.getUserID() == userId) {
+            if (messagingService.send(recordingToText)) {
+                return new ResponseEntity<>(HttpStatusCode.valueOf(200));
+            }
+        }
+        return new ResponseEntity<>(HttpStatusCode.valueOf(405));
     }
 
     @DeleteMapping("/{userId}/{audioId}")
-    public String deleteSpecificAudio(@PathVariable int userId, @PathVariable int audioId) {
-        return "Delete an audio " + audioId + " of user " + userId;
+    public ResponseEntity<String> deleteSpecificAudio(@PathVariable int userId, @PathVariable int audioId) {
+        if (recordingService.deleteRecording(userId, audioId)) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(200));
+        }
+        return new ResponseEntity<>(HttpStatusCode.valueOf(402));
     }
 
 }

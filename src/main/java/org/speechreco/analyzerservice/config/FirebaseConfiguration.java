@@ -2,6 +2,7 @@ package org.speechreco.analyzerservice.config;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
@@ -22,8 +23,6 @@ public class FirebaseConfiguration {
                 .setStorageBucket("speechrec-b38d7.appspot.com")
                 .build();
         FirebaseApp.initializeApp(options);
-
         return StorageClient.getInstance().bucket();
     }
-
 }
