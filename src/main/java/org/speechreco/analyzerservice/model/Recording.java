@@ -2,10 +2,7 @@ package org.speechreco.analyzerservice.model;
 
 
 import com.google.gson.Gson;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -20,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Recording {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int userID;
     private String title;

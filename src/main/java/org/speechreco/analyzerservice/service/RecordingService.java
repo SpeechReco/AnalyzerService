@@ -23,12 +23,12 @@ public class RecordingService {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
         Recording recording = gson.fromJson(data, Recording.class);
         if (uid != recording.getUserID()) return false;
-        storageBucket.create(String.valueOf(recording.getId()), recording.getAudioBytes());
-        System.out.println(Arrays.toString(recording.getAudioBytes()));
         try {
-            String url = String.valueOf(storageBucket.get(String.valueOf(recording.getId())).signUrl(10000000, TimeUnit.SECONDS));
-            recording.setRecordingURI(url);
-            recordingRepository.save(recording);
+            Recording savedRecording = recordingRepository.save(recording);
+            storageBucket.create(savedRecording.getUserID() + "/" + savedRecording.getId(), savedRecording.getAudioBytes());
+            String url = String.valueOf(storageBucket.get(savedRecording.getUserID() + "/" + savedRecording.getId()).signUrl(10000000, TimeUnit.SECONDS));
+            savedRecording.setRecordingURI(url);
+            recordingRepository.updateUrlById(savedRecording.getId(),url);
             return true;
         } catch (Exception e) {
             storageBucket.delete(Bucket.BucketSourceOption.userProject(String.valueOf(recording.getId())));

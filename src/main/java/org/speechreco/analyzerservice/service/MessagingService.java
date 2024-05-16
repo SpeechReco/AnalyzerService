@@ -1,14 +1,14 @@
 package org.speechreco.analyzerservice.service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.speechreco.analyzerservice.config.RabbitMQConfiguration;
 import org.speechreco.analyzerservice.model.Analysis;
 import org.speechreco.analyzerservice.model.Recording;
-import org.springframework.amqp.core.Queue;
+import org.speechreco.analyzerservice.model.SttMessagePacket;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,9 +18,11 @@ public class MessagingService {
     @Autowired
     private AnalysisService analysisService;
 
-    public boolean send(Recording recording) {
+    public boolean send(String name, Recording recording, String language, int speakerAmount, boolean generateSummary) {
         try {
-            rabbitTemplate.convertAndSend(RabbitMQConfiguration.MESSAGE_QUEUE, recording.toJson());
+            if (name == null || name.isEmpty()) name = "Unnamed";
+            SttMessagePacket messagePacket = new SttMessagePacket(name, language, speakerAmount, generateSummary, recording);
+            rabbitTemplate.convertAndSend(RabbitMQConfiguration.MESSAGE_QUEUE, messagePacket.toJson());
         } catch (Exception e) {
             return false;
         }
@@ -29,8 +31,13 @@ public class MessagingService {
 
     @RabbitListener(queues = "stt-response")
     public void processQuery(String message) {
-        Analysis response = new Gson().fromJson(message, Analysis.class);
-        analysisService.save(response);
+        try {
+            Analysis response = new Gson().fromJson(message, Analysis.class);
+            analysisService.save(response);
+        } catch (JsonSyntaxException e) {
+            System.out.println("Error occurred, packet omitted\nPacket data: " + message);
+        }
+
 
     }
 

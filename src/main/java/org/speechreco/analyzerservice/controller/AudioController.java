@@ -39,10 +39,16 @@ public class AudioController {
     }
 
     @PostMapping("/{userId}/{audioId}")
-    public ResponseEntity<String> postAudioForTranscription(@PathVariable("userId") int userId, @PathVariable("audioId") int audioId) {
+    public ResponseEntity<String> postAudioForTranscription(@PathVariable("userId") int userId,
+                                                            @PathVariable("audioId") int audioId,
+                                                            @RequestHeader(name = "Analysis-Name", required = false) String analysisName,
+                                                            @RequestHeader(name = "Language", required = false) String language,
+                                                            @RequestHeader(name = "Speaker-Amount", required = false) int speakerAmount,
+                                                            @RequestHeader(name = "Enable-Summary", required = false) boolean generateSummary) {
+
         Recording recordingToText = recordingService.getSpecificRecording(userId, audioId);
         if (recordingToText != null && recordingToText.getUserID() == userId) {
-            if (messagingService.send(recordingToText)) {
+            if (messagingService.send(analysisName, recordingToText, language, speakerAmount, generateSummary)) {
                 return new ResponseEntity<>(HttpStatusCode.valueOf(200));
             }
         }

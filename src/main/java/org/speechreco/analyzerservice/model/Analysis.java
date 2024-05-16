@@ -1,9 +1,7 @@
 package org.speechreco.analyzerservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import com.google.gson.Gson;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -16,6 +14,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Analysis {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "recordingid")
     private int recordingID;
@@ -31,4 +30,13 @@ public class Analysis {
 
     @Transient
     private String transcription;
+
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public void validateTranscript() {
+        if (transcription == null) return;
+    }
 }
