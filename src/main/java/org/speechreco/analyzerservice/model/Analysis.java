@@ -39,4 +39,8 @@ public class Analysis {
     public void validateTranscript() {
         if (transcription == null) return;
     }
+
+    public boolean isEmpty() {
+        return id == 0 && recordingID == 0 && textURI == null && creationDate == null;
+    }
 }

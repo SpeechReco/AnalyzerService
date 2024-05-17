@@ -3,6 +3,7 @@ package org.speechreco.analyzerservice.service;
 import com.google.cloud.storage.Bucket;
 import org.speechreco.analyzerservice.dao.AnalysisRepository;
 import org.speechreco.analyzerservice.model.Analysis;
+import org.speechreco.analyzerservice.model.GPTMessagePacket;
 import org.speechreco.analyzerservice.model.Recording;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,4 +38,5 @@ public class AnalysisService {
         List<Analysis> analysisList = analysisRepository.getByRecordingID(audioId);
         return analysisList.stream();
     }
+
 }

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Primary;
 public class RabbitMQConfiguration {
     public static final String DIRECT_EXCHANGE_NAME = "amq.direct";
     public static final String MESSAGE_QUEUE = "stt-queue";
+    public static final String GPT_QUEUE = "gpt-queue";
     public static final String RESPONSE_QUEUE = "stt-response";
 
     @Bean
@@ -23,6 +24,11 @@ public class RabbitMQConfiguration {
     @Primary
     public Queue messagesQueue() {
         return new Queue(MESSAGE_QUEUE);
+    }
+
+    @Bean
+    public Queue gptQueue() {
+        return new Queue(GPT_QUEUE);
     }
 
     @Bean
@@ -38,5 +44,9 @@ public class RabbitMQConfiguration {
     @Bean
     public Binding messageResponseQueueBinding(DirectExchange exchange) {
         return BindingBuilder.bind(responseQueue()).to(exchange).with(RESPONSE_QUEUE);
+    }
+    @Bean
+    public Binding gptMessageQueueBinding(DirectExchange exchange) {
+        return BindingBuilder.bind(gptQueue()).to(exchange).with(GPT_QUEUE);
     }
 }
